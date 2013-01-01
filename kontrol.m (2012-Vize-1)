@@ -1,0 +1,36 @@
+function kontrol(resim)
+rgb = imread(resim);
+gray = rgb2gray(rgb);
+bw = im2bw(gray);
+ 
+R = regionprops(bw, 'Eccentricity');
+e = [R.Eccentricity];
+ 
+[a, b] = bwlabel(bw, 8);
+ 
+c = (a==0); %etiketi 0 olanları al yani ışıkları veya okları
+s = regionprops(c, 'centroid');
+sz = size(c);
+ 
+merkez = [s.Centroid];
+ 
+if e < 0.5570 %bu yuvarlaklık değerinin altı daire yani ışıklar
+    if merkez(2) > sz(1) / 2
+        fprintf('ileri\n');
+    elseif merkez(2) < sz(1) / 2
+        fprintf('dur\n');
+    end
+else %0.5570'in üstü değerler oklar   
+    I = imcomplement(bw);
+    I = bwlabel(I);
+    r = regionprops(I, 'Orientation');
+    aci = [r.Orientation];
+    if aci < 0
+        fprintf('sola_dön\n')
+    elseif aci > 0
+        fprintf('sağa_dön\n')
+    else
+        fprintf('hiçbir şey yapma\n')
+    end
+end
+end
